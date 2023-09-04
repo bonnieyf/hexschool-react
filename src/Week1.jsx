@@ -12,7 +12,6 @@ import Alert from '@mui/material/Alert';
 import CheckIcon from '@mui/icons-material/Check';
 import Fade from '@mui/material/Fade';
 
-import './index.css'
 
 const data = [
     {

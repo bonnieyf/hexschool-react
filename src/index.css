@@ -29,7 +29,8 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  padding: 40px;
+  padding: 0 20px;
+  margin: 0;
 }
 
 h1 {
@@ -86,4 +87,40 @@ span {
 
 .alertBox {
   margin-top: 20px;
+}
+
+
+header {
+  display: block;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+
+header h1 {
+  color: #1a1a1a;
+  font-size: 15px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  font-family: 'Courier New', Courier, monospace;
+  margin-bottom: 20px;
+}
+
+nav {
+  display: inline-block;
+}
+
+nav ul {
+  padding: 0;
+  margin: 0;
+}
+
+nav li {
+  display: inline-block;
+  padding: 0 10px;
+}
+
+nav a:before {
+  content: "* ";
 }
