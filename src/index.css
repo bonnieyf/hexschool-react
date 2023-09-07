@@ -124,3 +124,13 @@ nav li {
 nav a:before {
   content: "* ";
 }
+
+textarea {
+  width: 100%;
+  border-radius: 10px;
+  resize: none;
+  padding: 20px;
+  height: 80px;
+  box-sizing: border-box;
+  border-color: #eee;
+}

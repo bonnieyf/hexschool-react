@@ -1,5 +1,21 @@
 import { useState, useEffect } from 'react'
 import { Container } from '@mui/material/'
+import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
+import Typography from '@mui/material/Typography'
+import Grid from '@mui/material/Unstable_Grid2'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import Stack from '@mui/material/Stack'
+import Button from '@mui/material/Button'
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart'
+import MenuItem from '@mui/material/MenuItem'
+import Select from '@mui/material/Select'
 
 const drinks = [
   {
@@ -57,6 +73,7 @@ function Week2 () {
   const [myCart, setMyCart] = useState([])
   const [order, setOrder] = useState([])
   const [remark, setRemark] = useState('')
+  const [qtyCount, setQtyCount] = useState()
 
   const handleOrder = () => {
     if (myCart.length === 0) return
@@ -85,106 +102,270 @@ function Week2 () {
     return myCart.reduce((total, item) => total + item.price * item.qty, 0)
   }
 
+  const handleQtyChange = (itemId, newQty) => {
+    setMyCart(prevCart => {
+      const updatedCart = prevCart.map(item => {
+        if (item.id === itemId) {
+          return { ...item, qty: newQty }
+        }
+        return item
+      })
+      return updatedCart
+    })
+  }
+
   useEffect(() => {
     setOrder(prevOrder => prevOrder.slice().sort((a, b) => b.id - a.id))
   }, [order])
 
+  const qtyList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+  const style = {
+    width: '100%',
+    maxWidth: 360,
+    bgcolor: 'background.paper'
+  }
+
   return (
     <>
-      <Container>
-        <h1>點餐系統</h1>
-
-        <div className='sidebar'>
-          {/* 點選品項加入購物車 */}
-          {data.map((product, idx) => (
-            <div
-              key={product.id}
-              onClick={() =>
-                setMyCart(drinksList => {
-                  const isNewDrinksIdx = drinksList.findIndex(
-                    item => item.id === product.id
-                  )
-                  if (isNewDrinksIdx === -1) {
-                    const newDrink = { ...product, qty: 1 } // 新品項，初始化 qty 為 1
-                    return [...drinksList, newDrink] // 將新品項加到陣列末尾
-                  } else {
-                    const updatedDrinks = [...drinksList] // 複製陣列以避免直接修改
-                    updatedDrinks[isNewDrinksIdx].qty++ // 更新數量
-                    return updatedDrinks
-                  }
-                })
-              }
+      <Container
+        sx={{
+          backgroundColor: '#f8f8f8',
+          padding: '30px',
+          borderRadius: '10px'
+        }}
+      >
+        <Grid container rowSpacing={1} columnSpacing={{ xs: 5, sm: 5, md: 5 }}>
+          <Grid item xs={4}>
+            <h1>Menu</h1>
+            <Box
+              sx={{
+                width: '100%',
+                maxWidth: 360,
+                bgcolor: 'background.paper',
+                padding: '10px'
+              }}
             >
-              {product.name},{product.price}
+              {data.map((product, idx) => (
+                <Box
+                  sx={{ my: 3, mx: 2 }}
+                  key={product.id}
+                  onClick={event => {
+                    event.stopPropagation() // 阻止事件冒泡
+                    setMyCart(drinksList => {
+                      const isNewDrinksIdx = drinksList.findIndex(
+                        item => item.id === product.id
+                      )
+                      if (isNewDrinksIdx === -1) {
+                        const newDrink = { ...product, qty: 1 }
+                        return [...drinksList, newDrink]
+                      } else {
+                        const updatedDrinks = [...drinksList]
+                        updatedDrinks[isNewDrinksIdx].qty++
+                        return updatedDrinks
+                      }
+                    })
+                  }}
+                >
+                  <Grid container alignItems='center'>
+                    <Grid item xs>
+                      <Typography gutterBottom variant='h5' component='div'>
+                        {product.name}
+                      </Typography>
+                    </Grid>
+                    <Grid item>
+                      <Typography gutterBottom variant='h6' component='div'>
+                        ${product.price}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                  <Divider variant='middle' />
+                </Box>
+              ))}
+            </Box>
+          </Grid>
+          <Grid item xs={8}>
+            <div className='cart'>
+              <h1>Shopping Cart</h1>
+
+              {myCart.length > 0 ? (
+                <>
+                  <TableContainer
+                    component={Paper}
+                    sx={{ marginBottom: '20px' }}
+                  >
+                    <Table sx={{ minWidth: 650 }} aria-label='simple table'>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Item</TableCell>
+                          <TableCell align='right'>Qty</TableCell>
+                          <TableCell align='right'>Unit</TableCell>
+                          <TableCell align='right'>Sum</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {myCart.map(item => (
+                          <TableRow
+                            key={item.id}
+                            sx={{
+                              '&:last-child td, &:last-child th': { border: 0 }
+                            }}
+                          >
+                            <TableCell component='th' scope='row'>
+                              {item.name}
+                            </TableCell>
+                            <TableCell align='right'>
+                              {/* <Select
+                                labelId='demo-select-small-label'
+                                id='demo-select-small'
+                                value={item.qty}
+                                label='Age'
+                                onChange={e =>
+                                  handleQtyChange(item.id, e.target.value)
+                                }
+                              >
+                                {qtyList.map(num => (
+                                  <MenuItem
+                                    value={num}
+                                    selected={item.qty === num}
+                                  >
+                                    {num}
+                                  </MenuItem>
+                                ))}
+                              </Select> */}
+                              {item.qty}
+                            </TableCell>
+                            <TableCell align='right'>{item.price}</TableCell>
+                            <TableCell align='right'>
+                              {item.price * item.qty}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+
+                        <TableRow>
+                          <TableCell rowSpan={3} />
+                          <TableCell align='right' colSpan={2}>
+                            Total
+                          </TableCell>
+                          <TableCell align='right'>
+                            {calculateTotal()}
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+
+                  <Grid
+                    container
+                    rowSpacing={1}
+                    columnSpacing={{ xs: 5, sm: 5, md: 5 }}
+                  >
+                    <Grid item xs={2}>
+                      <p>Note</p>
+                    </Grid>
+                    <Grid item xs={10}>
+                      <textarea
+                        cols='30'
+                        rows='10'
+                        onChange={event => setRemark(event.target.value)}
+                      ></textarea>
+
+                      <Stack
+                        spacing={10}
+                        direction='row'
+                        sx={{ float: 'right', marginTop: '20px' }}
+                      >
+                        <Button
+                          onClick={handleOrder}
+                          variant='contained'
+                          startIcon={<AddShoppingCartIcon />}
+                        >
+                          CheckOut
+                        </Button>
+                      </Stack>
+                    </Grid>
+                  </Grid>
+                </>
+              ) : (
+                <div className='content'>
+                  <p>購物車內尚未有任何商品</p>
+                </div>
+              )}
             </div>
-          ))}
+          </Grid>
+          <Grid item xs={12}>
+            <div className='cart'>
+              <h2>Order List</h2>
 
-          {/* 顯示購物車內容 */}
-          <div className='cart'>
-            <h2>Shopping Cart</h2>
-
-            {myCart.length > 0 ? (
-              <>
-                <ul>
-                  {myCart.map(item => (
-                    <li key={item.id}>
-                      {item.name} x {item.qty}，單價：{item.price}，小計:
-                      {item.price * item.qty}
-                    </li>
-                  ))}
-                </ul>
-                <p>總計: {calculateTotal()}</p>
-                <textarea
-                  name=''
-                  id=''
-                  cols='30'
-                  rows='10'
-                  placeholder='備註'
-                  onChange={event => setRemark(event.target.value)}
-                ></textarea>
-                <button onClick={handleOrder}>Submit</button>
-              </>
-            ) : (
-              <div className='content'>
-                <p>購物車內尚未有任何商品</p>
-              </div>
-            )}
-          </div>
-
-          {/* 顯示訂單內容 */}
-          <div className='cart'>
-            <h2>Order List</h2>
-
-            {order.length > 0 ? (
-              <>
-                <ul>
+              {order.length > 0 ? (
+                <>
                   {order
                     .slice()
                     .sort((a, b) => b.id - a.id)
                     .map(orderItem => (
-                      <li key={orderItem.id}>
+                      <>
                         <h3>Order ID: {orderItem.id}</h3>
-                        <ul>
-                          {orderItem.products.map(product => (
-                            <li key={product.name}>
-                              {product.name} x {product.qty}，小計：
-                              {product.subTotal}
-                            </li>
-                          ))}
-                        </ul>
+                        <TableContainer
+                          component={Paper}
+                          sx={{ marginBottom: '20px' }}
+                          key={orderItem.id}
+                        >
+                          <Table
+                            sx={{ minWidth: 650 }}
+                            aria-label='simple table'
+                          >
+                            <TableHead>
+                              <TableRow>
+                                <TableCell>Item</TableCell>
+                                <TableCell align='right'>Qty</TableCell>
+                                <TableCell align='right'>Sum</TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {orderItem.products.map(product => (
+                                <TableRow
+                                  key={product.name}
+                                  sx={{
+                                    '&:last-child td, &:last-child th': {
+                                      border: 0
+                                    }
+                                  }}
+                                >
+                                  <TableCell component='th' scope='row'>
+                                    {product.name}
+                                  </TableCell>
+                                  <TableCell align='right'>
+                                    {product.qty}
+                                  </TableCell>
+                                  <TableCell align='right'>
+                                    {product.subTotal}
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                              <TableRow>
+                                <TableCell rowSpan={2} />
+                                <TableCell align='right' colSpan={1}>
+                                  Total
+                                </TableCell>
+                                <TableCell align='right'>
+                                  {orderItem.total}
+                                </TableCell>
+                              </TableRow>
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
                         <p>備註: {orderItem.remark}</p>
-                        <p>總計：{orderItem.total}</p>
-                      </li>
+                      </>
                     ))}
-                </ul>
-              </>
-            ) : (
-              <div className='content'>
-                <p>尚未有任何訂單</p>
-              </div>
-            )}
-          </div>
-        </div>
+                </>
+              ) : (
+                <div className='content'>
+                  <p>尚未有任何訂單</p>
+                </div>
+              )}
+            </div>
+          </Grid>
+        </Grid>
       </Container>
     </>
   )
