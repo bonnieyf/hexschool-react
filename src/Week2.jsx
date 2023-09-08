@@ -150,20 +150,27 @@ function Week2 () {
                 <Box
                   sx={{ my: 3, mx: 2 }}
                   key={product.id}
-                  onClick={event => {
-                    event.stopPropagation() // 阻止事件冒泡
-                    setMyCart(drinksList => {
-                      const isNewDrinksIdx = drinksList.findIndex(
+                  onClick={() => {
+                    setMyCart(prevCart => {
+                      const existingItemIndex = prevCart.findIndex(
                         item => item.id === product.id
                       )
-                      if (isNewDrinksIdx === -1) {
-                        const newDrink = { ...product, qty: 1 }
-                        return [...drinksList, newDrink]
-                      } else {
-                        const updatedDrinks = [...drinksList]
-                        updatedDrinks[isNewDrinksIdx].qty++
-                        return updatedDrinks
+
+                      if (existingItemIndex === -1) {
+                        return [...prevCart, { ...product, qty: 1 }]
                       }
+
+                      if (prevCart[existingItemIndex].qty >= 10) {
+                        alert('數量已達上限')
+                        return prevCart
+                      }
+
+                      return prevCart.map((item, index) => {
+                        if (index === existingItemIndex) {
+                          return { ...item, qty: item.qty + 1 }
+                        }
+                        return item
+                      })
                     })
                   }}
                 >
@@ -215,7 +222,7 @@ function Week2 () {
                               {item.name}
                             </TableCell>
                             <TableCell align='right'>
-                              {/* <Select
+                              <Select
                                 labelId='demo-select-small-label'
                                 id='demo-select-small'
                                 value={item.qty}
@@ -232,8 +239,7 @@ function Week2 () {
                                     {num}
                                   </MenuItem>
                                 ))}
-                              </Select> */}
-                              {item.qty}
+                              </Select>
                             </TableCell>
                             <TableCell align='right'>{item.price}</TableCell>
                             <TableCell align='right'>
