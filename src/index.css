@@ -121,6 +121,11 @@ nav li {
   padding: 0 10px;
 }
 
+nav a.active {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
 nav a:before {
   content: "* ";
 }
